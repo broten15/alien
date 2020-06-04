@@ -90,6 +90,24 @@ def create_fleet(ai_settings, screen, aliens, ship):
     for row in range(row_number):
         for alien_number in range(alien_number_x):
             create_alien(ai_settings, screen, alien_number, aliens, row)
+
+def check_fleet_edges(aliens, ai_settings):
+    """Responds to if fleet has reached the edge of the screen"""
+    for alien in aliens.sprites():
+        if alien.check_edges():
+            change_fleet_direction(aliens, ai_settings)
+            break
+
+def change_fleet_direction(aliens, ai_settings):
+    """Changes fleet direction and drops entire fleet"""
+    for alien in aliens.sprites():
+        alien.rect.y += ai_settings.fleet_drop_speed
+    ai_settings.fleet_direction *= -1
+
+def update_aliens(aliens, ai_settings):
+    """Check if fleet is on edge, then update position entire fleet"""
+    check_fleet_edges(aliens, ai_settings)
+    aliens.update()
         
 def update_screen(ai_settings, screen, ship, bullets, aliens):
     """Updates images on screen and flips to new screen"""
