@@ -24,23 +24,21 @@ class Ship():
         self.moving_down = False
 
         # Store a decimal value for the ships center
-        self.centerx = float(self.rect.centerx)
-        self.centery = float(self.rect.centery)
+        self.center = float(self.rect.centerx)
+    
+    def center_ship(self):
+        """Centers the ship"""
+        self.center = self.screen_rect.centerx
 
     def update(self):
         """Updates the position of the ship"""
         if self.moving_right and self.rect.right < self.screen_rect.right:
-            self.centerx += self.ai_settings.ship_speed_factor
+            self.center += self.ai_settings.ship_speed_factor
         if self.moving_left and self.rect.left > 0:
-            self.centerx -= self.ai_settings.ship_speed_factor
-        if self.moving_up and self.rect.top > 0:
-            self.centery -= self.ai_settings.ship_speed_factor
-        if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
-            self.centery += self.ai_settings.ship_speed_factor     
+            self.center -= self.ai_settings.ship_speed_factor 
 
-        # Update rect object from self.center x and y
-        self.rect.centerx = self.centerx
-        self.rect.centery = self.centery   
+        # Update rect object from self.center 
+        self.rect.centerx = self.center
 
     def blitme(self):
         """Draws ship at current location"""

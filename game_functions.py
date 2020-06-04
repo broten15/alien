@@ -1,5 +1,6 @@
 import sys
 import pygame
+from time import sleep
 
 from bullet import Bullet
 from alien import Alien
@@ -40,7 +41,8 @@ def check_events(ship, bullets, ai_settings, screen):
             check_keyup_events(event, ship)
 
 def update_bullets(bullets, aliens, ai_settings, screen, ship):
-    """Delete bullets that go off screen"""
+    """Update bullet positions and delete bullets that go off screen"""
+    bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
@@ -116,11 +118,46 @@ def change_fleet_direction(aliens, ai_settings):
         alien.rect.y += ai_settings.fleet_drop_speed
     ai_settings.fleet_direction *= -1
 
-def update_aliens(aliens, ai_settings):
+def update_aliens(aliens, ai_settings, ship, bullets, stats, screen):
     """Check if fleet is on edge, then update position entire fleet"""
     check_fleet_edges(aliens, ai_settings)
     aliens.update()
-        
+
+    # checks if alien hits ship
+    if pygame.sprite.spritecollideany(ship, aliens):
+        ship_hit(stats, aliens, bullets, ai_settings, ship, screen)
+    # checks if alien hits bottom of screen
+    check_aliens_bottom(stats, aliens, bullets, ai_settings, ship, screen)
+
+def ship_hit(stats, aliens, bullets, ai_settings, ship, screen):
+    """Responds apropriately if alien hits ship"""
+    if stats.ships_left > 0:
+        # Takes away ship life
+        stats.ships_left -= 1
+
+        # empty bullet and alien group
+        aliens.empty()
+        bullets.empty()
+
+        # Create a new fleet and center ship
+        create_fleet(ai_settings, screen, aliens, ship)
+        ship.center_ship()
+
+        # Pause game
+        sleep(0.5)
+    else:
+        # Ends game
+        stats.game_active = False
+
+def check_aliens_bottom(stats, aliens, bullets, ai_settings, ship, screen):
+    """Checks to see if aliense hove reached the bottom of screen"""
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            # gives same results as if aliens hits hip
+            ship_hit(stats, aliens, bullets, ai_settings, ship, screen)
+            break
+
 def update_screen(ai_settings, screen, ship, bullets, aliens):
     """Updates images on screen and flips to new screen"""
     # Updates screen on each loop
