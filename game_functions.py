@@ -2,19 +2,20 @@ import sys
 import pygame
 
 from bullet import Bullet
+from alien import Alien
 
 
 def check_keydown_events(event, ship, bullets, ai_settings, screen):
     """Checks for keydown presses"""
+    # Quit game key shortcut
+    if  event.key == pygame.K_q:
+        sys.exit()
+
     # ship movement keys
-    if event.key == pygame.K_RIGHT:
+    elif event.key == pygame.K_RIGHT:
         ship.moving_right = True
     elif event.key == pygame.K_LEFT:
         ship.moving_left = True
-    elif event.key == pygame.K_UP:
-        ship.moving_up = True
-    elif event.key == pygame.K_DOWN:
-        ship.moving_down = True
 
     # bullet fireing key
     elif event.key == pygame.K_SPACE:
@@ -26,16 +27,12 @@ def check_keyup_events(event, ship):
         ship.moving_right = False
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
-    elif event.key == pygame.K_UP:
-        ship.moving_up = False
-    elif event.key == pygame.K_DOWN:
-        ship.moving_down = False
 
 def check_events(ship, bullets, ai_settings, screen):
     """Responds to key and mouse press events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-                sys.exit()
+            sys.exit()
             
         elif event.type == pygame.KEYDOWN:
             check_keydown_events(event, ship, bullets, ai_settings, screen)
@@ -55,7 +52,46 @@ def fire_bullet(bullets, ai_settings, screen, ship):
         new_bullet = Bullet(screen, ai_settings, ship)
         bullets.add(new_bullet)
 
-def update_screen(ai_settings, screen, ship, bullets):
+def get_alien_number_x(ai_settings, alien_width):
+    """Gets the amount of aliens that can fit on a row"""
+    # find the amount of x space available
+    available_space_x = ai_settings.screen_width - (2 * alien_width)
+    # find the amout of aliens as an int that can fit in x space available
+    alien_number_x = int(available_space_x / (2 * alien_width))   
+    return alien_number_x
+
+def get_alien_rows(ai_settings, alien_height, ship_height):
+    """Determines the amount of alien rows fit on screen"""
+    available_space_y = (ai_settings.screen_height - 
+                            (3 * alien_height) - ship_height)
+    row_number = int(available_space_y / (2 * alien_height))
+    return row_number
+
+def create_alien(ai_settings, screen, alien_number, aliens, row_number):
+    """Creates an allien and places it in a row"""
+    # gets alien width
+    alien = Alien(ai_settings, screen)
+    alien_width = alien.rect.width
+    # funtion that gets and sets position of each alien 
+    alien.x = alien_width + (2 * alien_width * alien_number)
+    alien.rect.x = alien.x
+    alien.rect.y = alien.rect.height + (2 * alien.rect.height * row_number)
+    # adds alien to group  
+    aliens.add(alien)
+
+def create_fleet(ai_settings, screen, aliens, ship):
+    """Creates a fleet of aliens"""
+    # create an alien and find the number of rows and aliens in a row
+    alien = Alien(ai_settings, screen)
+    alien_number_x = get_alien_number_x(ai_settings, alien.rect.width)
+    row_number = get_alien_rows(ai_settings, alien.rect.height, ship.rect.height)
+
+    # Create the fleet of aliens
+    for row in range(row_number):
+        for alien_number in range(alien_number_x):
+            create_alien(ai_settings, screen, alien_number, aliens, row)
+        
+def update_screen(ai_settings, screen, ship, bullets, aliens):
     """Updates images on screen and flips to new screen"""
     # Updates screen on each loop
     screen.fill(ai_settings.bg_color)
@@ -63,9 +99,10 @@ def update_screen(ai_settings, screen, ship, bullets):
     # Redraws all bullets behind ship and alien
     for bullet in bullets.sprites():
         bullet.draw_bullet()
-
     # Redraws ship
     ship.blitme()
+    # Redraws aliens
+    aliens.draw(screen)
 
     # Make most recently drawn screen visible
     pygame.display.flip()
