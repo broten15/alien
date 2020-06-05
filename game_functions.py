@@ -55,7 +55,7 @@ def check_events(ship, bullets, ai_settings, screen, play_button,
                 ai_settings, screen, aliens, ship, bullets)
 
 def check_play_button(mouse_y, mouse_x, play_button, stats, ai_settings, 
-    screen, aliens, ship, bullets):
+        screen, aliens, ship, bullets):
     """Starts a new game if the player clicks play button"""
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_clicked and not stats.game_active:
@@ -63,8 +63,12 @@ def check_play_button(mouse_y, mouse_x, play_button, stats, ai_settings,
 
 def start_game(stats, aliens, bullets, ship, ai_settings, screen):
     """Initializes and starts game"""
+    # Resets dynamic settings
+    ai_settings.initialize_dynamic_settings()
+
     # Hide the mouse cursor
     pygame.mouse.set_visible(False)
+    
     # Reset the game statistics
     stats.reset_settings()
     stats.game_active = True
@@ -92,8 +96,9 @@ def check_alien_bullet_collisions(bullets, aliens, ai_settings, screen, ship):
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     
     if len(aliens) == 0:
-        # Creates new fleet and removes existing bullets
+        # Creates new fleet, speedup game, and removes existing bullets
         bullets.empty()
+        ai_settings.speedup_game()
         create_fleet(ai_settings, screen, aliens, ship)
 
 def fire_bullet(bullets, ai_settings, screen, ship):
