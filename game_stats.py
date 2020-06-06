@@ -1,3 +1,7 @@
+filename = 'high_score.txt'
+with open(filename, 'r') as f_obj:
+    high_score_number = int(f_obj.read())
+    
 class GameStats():
     """Tracks statistics for alien invasion"""
 
@@ -5,7 +9,7 @@ class GameStats():
         """Initializes statistics"""
         self.ai_settings = ai_settings
         self.reset_stats()
-        self.high_score = 0
+        self.high_score = high_score_number
 
         # Start alien invasion in an active state
         self.game_active = False

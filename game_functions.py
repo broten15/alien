@@ -11,6 +11,7 @@ def check_keydown_events(event, ship, bullets, ai_settings, screen,
     """Checks for keydown presses"""
     # Quit game key shortcut
     if  event.key == pygame.K_q:
+        save_high_score(stats)
         sys.exit()
 
     # ship movement keys
@@ -41,6 +42,7 @@ def check_events(ship, bullets, ai_settings, screen, play_button,
     """Responds to key and mouse press events"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            save_high_score(stats)
             sys.exit()
             
         elif event.type == pygame.KEYDOWN:
@@ -53,6 +55,12 @@ def check_events(ship, bullets, ai_settings, screen, play_button,
             mouse_x, mouse_y = pygame.mouse.get_pos()
             check_play_button(mouse_y, mouse_x, play_button, stats, 
                 ai_settings, screen, aliens, ship, bullets, sb)
+
+def save_high_score(stats):
+    """Saves high score if someone beats it"""
+    if stats.score == stats.high_score:
+        with open('high_score.txt', 'w') as f_obj:
+            f_obj.write(str(stats.score))
 
 def check_play_button(mouse_y, mouse_x, play_button, stats, ai_settings, 
         screen, aliens, ship, bullets, sb):
