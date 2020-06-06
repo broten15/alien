@@ -81,9 +81,8 @@ def start_game(stats, aliens, bullets, ship, ai_settings, screen, sb):
     stats.reset_stats()
     stats.game_active = True
 
-    sb.prep_score()
-    sb.prep_level()
-    sb.prep_ships()
+    # Renders in score images
+    sb.prep_images()
 
     # Empty the group of aliens and bullets
     aliens.empty()
@@ -115,15 +114,18 @@ def check_alien_bullet_collisions(bullets, aliens, ai_settings, screen, ship, st
         check_high_score(stats, sb)
 
     if len(aliens) == 0:
-        # Starts new level if fleet is destroyed
-        bullets.empty()
-        ai_settings.speedup_game()
+        start_new_level(bullets, ai_settings, stats, sb, screen, aliens, ship)
 
-        # Increase level number
-        stats.level += 1
-        sb.prep_level()
+def start_new_level(bullets, ai_settings, stats, sb, screen, aliens, ship):
+    """Starts new level if fleet is destroyed"""
+    bullets.empty()
+    ai_settings.speedup_game()
 
-        create_fleet(ai_settings, screen, aliens, ship)
+    # Increase level number
+    stats.level += 1
+    sb.prep_level()
+
+    create_fleet(ai_settings, screen, aliens, ship)
 
 def check_high_score(stats, sb):
     """If score is greater than high score, high score updates with current one"""
