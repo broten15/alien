@@ -18,7 +18,7 @@ def run_game():
 
     # Make a ship
     ship = Ship(screen, ai_settings)
-    # Make a group to store bpullets
+    # Make a group to store bullets
     bullets = Group()
     # Make a group to store aliens
     aliens = Group()
