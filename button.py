@@ -1,7 +1,7 @@
 import pygame.font
 
 class Button():
-    """A class to model a plass button instance"""
+    """A class to model a play button instance"""
 
     def __init__(self, ai_settings, screen, msg):
         """Initialize button atributes"""
